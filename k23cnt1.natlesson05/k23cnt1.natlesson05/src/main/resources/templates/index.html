@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout::head}"></head>
+
+<body>
+<header th:replace="~{fragments/layout::header}"></header>
+
+<section class="container my-4">
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
+        <div class="container-fluid py-3">
+
+            <h1 class="display-5 fw-bold">Chào mừng đến với Trang chủ!</h1>
+
+            <p class="col-md-8 fs-4" th:text="${@environment.getProperty('app.welcome.message')}"></p>
+            <p>Nội dung, Giới thiệu về trang chủ....</p>
+
+            <a th:href="@{/profile}" class="btn btn-primary btn-lg mt-3">
+                Devmaster Profile
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="row text-center g-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Giới thiệu</h2>
+                    <p class="card-text">Tìm hiểu thêm thông tin về chúng tôi và dự án này.</p>
+                    <a th:href="@{/about}" class="btn btn-outline-secondary">Xem thêm &raquo;</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Liên hệ</h2>
+                    <p class="card-text">Các thông tin để liên lạc với chúng tôi khi bạn cần hỗ trợ.</p>
+                    <a th:href="@{/contact}" class="btn btn-outline-secondary">Xem thêm &raquo;</a>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout::footer}" class="mt-5"></footer>
+
+</body>
+</html>
