@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Sách (NAT Project)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body p-2 d-flex gap-2">
+            <a th:href="@{/nat-books}" class="btn btn-primary fw-bold">
+                <i class="fa-solid fa-book"></i> Quản lý Sách
+            </a>
+            <a th:href="@{/nat-authors}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-user-pen"></i> Quản lý Tác giả
+            </a>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold m-0 text-uppercase">Danh sách Sách</h2>
+        <a th:href="@{/nat-books/create}" class="btn btn-success">
+            <i class="fa-solid fa-plus"></i> Thêm mới Sách
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-bordered table-striped table-hover m-0 align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th class="text-center" style="width: 50px;">ID</th>
+                    <th style="width: 100px;">Mã sách</th>
+                    <th>Tên sách</th>
+                    <th class="text-end" style="width: 120px;">Giá tiền</th>
+                    <th>Tác giả & Vai trò</th>
+                    <th class="text-center" style="width: 150px;">Chức năng</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book : ${natListBooks}">
+                    <td class="text-center" th:text="${book.natBookId}"></td>
+                    <td class="fw-bold text-primary" th:text="${book.natBookCode}"></td>
+                    <td th:text="${book.natBookName}"></td>
+                    <td class="text-end" th:text="${#numbers.formatDecimal(book.natPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                    <td>
+                        <ul class="list-unstyled m-0">
+                            <li th:each="rel : ${book.natBookAuthors}" class="mb-1">
+                                <i class="fa-solid fa-user text-muted small me-1"></i>
+                                <span th:text="${rel.natAuthor.natAuthorName}" class="fw-semibold"></span>
+
+                                <span th:if="${rel.natIsEditor}" class="badge bg-danger ms-1">Chủ biên</span>
+                                <span th:unless="${rel.natIsEditor}" class="badge bg-secondary ms-1">Đồng TG</span>
+                            </li>
+                        </ul>
+                    </td>
+                    <td class="text-center">
+                        <a th:href="@{/nat-books/edit/{id}(id=${book.natBookId})}"
+                           class="btn btn-sm btn-warning me-1" title="Sửa">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a th:href="@{/nat-books/delete/{id}(id=${book.natBookId})}"
+                           class="btn btn-sm btn-danger"
+                           title="Xóa"
+                           onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa cuốn sách này?');">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(natListBooks)}">
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fa-regular fa-folder-open fa-3x mb-3"></i>
+                        <p class="m-0">Chưa có dữ liệu sách nào.</p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
