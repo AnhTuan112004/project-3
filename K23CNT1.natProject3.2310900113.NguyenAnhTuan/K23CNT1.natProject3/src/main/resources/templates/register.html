@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <style>
+        body {
+            /* Gradient màu Slate/Deep Blue sang trọng thay vì xanh lá */
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .reg-box {
+            width: 100%;
+            max-width: 550px;
+            background: #ffffff;
+            padding: 45px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Vòng tròn trang trí mờ phía sau */
+        .reg-box::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(13, 110, 253, 0.05);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .form-label {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group-text {
+            background-color: #f8fafc;
+            border-right: none;
+            color: #94a3b8;
+        }
+
+        .form-control {
+            border-left: none;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            background-color: #f8fafc;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #0d6efd, #2563eb);
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .error-text {
+            color: #dc3545;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="reg-box animate__animated animate__zoomIn">
+    <div class="text-center mb-5 position-relative" style="z-index: 1;">
+        <div class="bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle mb-3">
+            <i class="bi bi-person-plus-fill fs-1 text-primary"></i>
+        </div>
+        <h3 class="fw-extrabold text-dark tracking-tight">TẠO TÀI KHOẢN</h3>
+        <p class="text-muted small">Khám phá không gian âm nhạc chuyên nghiệp tại NAT Studio</p>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger border-0 small py-2 mb-4 rounded-3 text-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/register}" method="post" th:object="${user}" class="position-relative" style="z-index: 1;">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <div class="input-group border rounded-3 overflow-hidden">
+                    <span class="input-group-text"><i class="bi bi-person small"></i></span>
+                    <input type="text" th:field="*{username}" class="form-control"
+                           placeholder="Username" required minlength="4">
+                </div>
+                <div class="error-text" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Họ và tên</label>
+                <div class="input-group border rounded-3 overflow-hidden">
+                    <span class="input-group-text"><i class="bi bi-card-text small"></i></span>
+                    <input type="text" th:field="*{fullName}" class="form-control"
+                           placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="error-text" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email liên hệ</label>
+            <div class="input-group border rounded-3 overflow-hidden">
+                <span class="input-group-text"><i class="bi bi-envelope small"></i></span>
+                <input type="email" th:field="*{email}" class="form-control"
+                       placeholder="example@gmail.com" required>
+            </div>
+            <div class="error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Số điện thoại</label>
+            <div class="input-group border rounded-3 overflow-hidden">
+                <span class="input-group-text"><i class="bi bi-phone small"></i></span>
+                <input type="text" th:field="*{phone}" class="form-control"
+                       placeholder="0987xxxxxx">
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Mật khẩu bảo mật</label>
+            <div class="input-group border rounded-3 overflow-hidden">
+                <span class="input-group-text"><i class="bi bi-lock small"></i></span>
+                <input type="password" th:field="*{password}" class="form-control"
+                       placeholder="******" required minlength="6">
+            </div>
+            <div class="form-text text-muted" style="font-size: 0.7rem;">Mật khẩu tối thiểu 6 ký tự để bảo mật tối ưu.</div>
+            <div class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+            GIA NHẬP NGAY <i class="bi bi-arrow-right-short ms-1 fs-5"></i>
+        </button>
+    </form>
+
+    <div class="text-center mt-4 pt-3 border-top border-light">
+        <p class="text-muted small mb-1">Đã có tài khoản thành viên?</p>
+        <a th:href="@{/login}" class="text-primary fw-bold text-decoration-none">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập tại đây
+        </a>
+    </div>
+
+    <div class="text-center mt-3">
+        <a th:href="@{/}" class="text-muted small text-decoration-none hover-dark">
+            <i class="bi bi-house me-1"></i> Quay lại trang chủ
+        </a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/chat-box :: chat-box}"></div>
+
+</body>
+</html>

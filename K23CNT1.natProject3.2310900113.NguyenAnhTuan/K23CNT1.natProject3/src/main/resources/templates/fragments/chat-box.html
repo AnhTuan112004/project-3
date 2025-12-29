@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:fragment="chat-box">
+    <button class="chat-btn-toggle" onclick="toggleChat()" title="Hỗ trợ trực tuyến" id="chatBtn">
+        <i class="fas fa-comments"></i>
+        <span id="chat-status-dot" class="status-dot offline"></span>
+    </button>
+
+    <div class="chat-container shadow-lg" id="chatContainer">
+        <div class="chat-header">
+            <div class="d-flex align-items-center">
+                <div class="bg-white bg-opacity-20 rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                    <i class="fas fa-headset text-white"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">Hỗ trợ NAT Studio</h6>
+                    <div class="d-flex align-items-center">
+                        <span id="connection-indicator" class="connection-dot me-1"></span>
+                        <small id="connection-text" class="text-white-50" style="font-size: 0.65rem;">Đang kết nối...</small>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white small" onclick="toggleChat()" style="font-size: 0.7rem;"></button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message-wrapper receiver">
+                <div class="message-content shadow-sm">
+                    Xin chào! Bạn cần NAT Studio hỗ trợ thông tin gì về đặt lịch hay thiết bị không?
+                </div>
+                <small class="message-time">Vừa xong</small>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+                <input type="text" id="messageInput" class="form-control border-0 ps-3 py-2"
+                       placeholder="Nhập nội dung..."
+                       onkeypress="if(event.key === 'Enter') sendMessage()"
+                       autocomplete="off">
+                <button class="btn btn-primary border-0 px-3" id="sendBtn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: none;">
+        <input type="hidden" id="current-user-name"
+               th:value="${#authentication.principal != 'anonymousUser' ? #authentication.principal.fullName : 'Khách vãng lai'}">
+    </div>
+
+    <style>
+        /* 1. NÚT MỞ CHAT */
+        .chat-btn-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d6efd, #0056b3);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+            z-index: 10000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .chat-btn-toggle:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
+        .status-dot.offline { background-color: #e74c3c; }
+
+        /* 2. CONTAINER CHÍNH */
+        .chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 360px;
+            height: 520px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+
+            /* Trạng thái ẩn */
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            pointer-events: none;
+        }
+
+        .chat-container.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* 3. THÀNH PHẦN BÊN TRONG */
+        .chat-header {
+            background: linear-gradient(135deg, #0d6efd, #0056b3);
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .connection-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: inline-block;
+            opacity: 0.5;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f8fafc; /* Nền xám xanh nhẹ dịu mắt */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        .message-wrapper { margin-bottom: 16px; display: flex; flex-direction: column; }
+        .message-wrapper.sender { align-items: flex-end; }
+        .message-wrapper.receiver { align-items: flex-start; }
+
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 85%;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .sender .message-content {
+            background: linear-gradient(135deg, #0d6efd, #4facfe);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .receiver .message-content {
+            background-color: white;
+            color: #334155;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .message-time { font-size: 0.7rem; color: #94a3b8; margin-top: 5px; padding: 0 5px; }
+
+        .chat-input-area {
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .chat-input-area .input-group {
+            background-color: #f8fafc;
+        }
+
+        .chat-input-area input:focus {
+            box-shadow: none;
+            background-color: #fff;
+        }
+    </style>
+</div>
+</body>
+</html>

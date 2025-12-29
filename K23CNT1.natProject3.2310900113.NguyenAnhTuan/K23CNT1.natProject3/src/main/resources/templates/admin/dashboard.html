@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <style>
+        /* Tinh chỉnh riêng cho Dashboard */
+        :root {
+            --card-transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card {
+            transition: var(--card-transition);
+            border: 1px solid rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+        }
+
+        .icon-box {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            font-size: 1.6rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .action-btn {
+            transition: all 0.2s ease;
+            border: 1px solid #f1f5f9;
+            margin-bottom: 0.5rem;
+            background-color: white;
+        }
+
+        .action-btn:hover {
+            background-color: #f8fafc;
+            border-color: #0d6efd;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="d-flex">
+
+    <div th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></div>
+
+    <main class="flex-grow-1 px-4 py-4">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Tổng quan hệ thống</h2>
+                <p class="text-muted mb-0">Chào mừng trở lại! Dưới đây là tình hình kinh doanh hôm nay.</p>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-pill shadow-sm border d-flex align-items-center">
+                <i class="bi bi-calendar-check text-primary me-2"></i>
+                <span class="fw-bold text-dark small"
+                      th:text="${#temporals.format(#temporals.createNow(), 'EEEE, dd/MM/yyyy')}">
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card stat-card h-100 p-3 border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted fw-bold small text-uppercase mb-1">Đơn chờ duyệt</p>
+                                <h2 class="fw-bold text-dark mb-0 display-6" th:text="${pendingCount}">0</h2>
+                            </div>
+                            <div class="icon-box bg-warning bg-opacity-10 text-warning">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                        </div>
+                        <hr class="my-3 opacity-10">
+                        <a th:href="@{/admin/bookings}" class="text-decoration-none small fw-bold text-warning d-flex align-items-center">
+                            Xem chi tiết <i class="bi bi-arrow-right-short ms-1 fs-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card stat-card h-100 p-3 border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted fw-bold small text-uppercase mb-1">Doanh thu tháng</p>
+                                <h2 class="fw-bold text-success mb-0 display-6">
+                                    <span th:text="${monthlyRevenue != null ? #numbers.formatDecimal(monthlyRevenue, 0, 'POINT', 0, 'COMMA') : '0'}">0</span>
+                                    <small class="fs-6 fw-normal">₫</small>
+                                </h2>
+                            </div>
+                            <div class="icon-box bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                        </div>
+                        <hr class="my-3 opacity-10">
+                        <span class="text-muted small"><i class="bi bi-arrow-repeat me-1"></i>Dữ liệu thời gian thực</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card stat-card h-100 p-3 border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted fw-bold small text-uppercase mb-1">Phòng studio</p>
+                                <h2 class="fw-bold text-primary mb-0 display-6" th:text="${studioCount != null ? studioCount : 0}">0</h2>
+                            </div>
+                            <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-mic-fill"></i>
+                            </div>
+                        </div>
+                        <hr class="my-3 opacity-10">
+                        <a th:href="@{/admin/studios}" class="text-decoration-none small fw-bold text-primary d-flex align-items-center">
+                            Quản lý danh sách <i class="bi bi-gear-fill ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white py-4 px-4 border-bottom-0">
+                        <h6 class="mb-0 fw-bold text-dark">
+                            <i class="bi bi-cpu me-2 text-primary"></i>Tình trạng vận hành
+                        </h6>
+                    </div>
+                    <div class="card-body px-4 pb-4">
+                        <div class="alert alert-light border-0 d-flex align-items-center shadow-sm mb-3 p-3 rounded-3">
+                            <div class="bg-success bg-opacity-10 p-2 rounded-3 text-success me-3">
+                                <i class="bi bi-shield-check fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-success">Máy chủ ổn định</h6>
+                                <small class="text-muted">Các dịch vụ đang hoạt động bình thường.</small>
+                            </div>
+                        </div>
+
+                        <div th:if="${pendingCount > 0}" class="alert alert-warning border-0 d-flex align-items-center shadow-sm p-3 rounded-3">
+                            <div class="bg-warning bg-opacity-10 p-2 rounded-3 text-warning me-3">
+                                <i class="bi bi-bell-fill fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-0 text-dark">Thông báo mới</h6>
+                                <small class="text-muted">Có <span th:text="${pendingCount}"></span> đơn đặt lịch đang chờ bạn duyệt.</small>
+                            </div>
+                            <a th:href="@{/admin/bookings}" class="btn btn-sm btn-dark fw-bold rounded-pill px-3 shadow-sm">Xử lý</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 text-white"
+                     style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">Lối tắt nhanh</h5>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/admin/post/new}" class="btn action-btn text-start p-3 rounded-3 d-flex align-items-center">
+                                <i class="bi bi-file-earmark-plus text-primary fs-5 me-3"></i>
+                                <span class="fw-bold text-dark">Viết bài mới</span>
+                                <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                            </a>
+                            <a th:href="@{/admin/studio/new}" class="btn action-btn text-start p-3 rounded-3 d-flex align-items-center">
+                                <i class="bi bi-plus-square text-success fs-5 me-3"></i>
+                                <span class="fw-bold text-dark">Thêm phòng</span>
+                                <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                            </a>
+                            <a th:href="@{/admin/chat}" class="btn action-btn text-start p-3 rounded-3 d-flex align-items-center">
+                                <i class="bi bi-chat-dots text-info fs-5 me-3"></i>
+                                <span class="fw-bold text-dark">Hỗ trợ khách</span>
+                                <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+</body>
+</html>

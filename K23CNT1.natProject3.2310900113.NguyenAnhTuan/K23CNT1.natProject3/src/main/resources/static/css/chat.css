@@ -1,0 +1,191 @@
+/* =========================================
+   1. NÚT BẤM MỞ CHAT (FLOATING BUTTON)
+   ========================================= */
+.chat-btn-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border: none;
+    box-shadow: 0 8px 24px rgba(13, 110, 253, 0.35);
+    cursor: pointer;
+    z-index: 1050;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-btn-toggle:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 28px rgba(13, 110, 253, 0.45);
+}
+
+/* Hiệu ứng rung nhẹ khi có tin nhắn hoặc để thu hút chú ý */
+.chat-btn-toggle.pulse {
+    animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-blue {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(13, 110, 253, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
+}
+
+/* =========================================
+   2. KHUNG CHAT CHÍNH (CHAT WINDOW)
+   ========================================= */
+.chat-container {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 360px;
+    height: 520px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    display: none; /* Mặc định ẩn, bật bằng JS: display: flex */
+    flex-direction: column;
+    z-index: 1050;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    /* Animation khi mở */
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header: Glassmorphism style */
+.chat-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    padding: 18px 20px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header .status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #2ecc71;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    box-shadow: 0 0 8px #2ecc71;
+}
+
+/* Vùng nội dung tin nhắn */
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f8fafc; /* Nền xám xanh nhạt dịu mắt */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Thanh cuộn tinh tế */
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+/* =========================================
+   3. BONG BÓNG TIN NHẮN (MESSAGE BUBBLES)
+   ========================================= */
+.message {
+    padding: 10px 16px;
+    border-radius: 18px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    max-width: 85%;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+/* Người dùng gửi (Bên phải) */
+.message-sender {
+    background: linear-gradient(135deg, var(--primary-color), #4e92ff);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+/* Admin phản hồi (Bên trái) */
+.message-receiver {
+    background-color: white;
+    color: #1e293b;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #eef2f6;
+}
+
+/* Thời gian tin nhắn */
+.message-time {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-top: 4px;
+    display: block;
+}
+
+.message-sender .message-time { text-align: right; color: #e0edff; }
+.message-receiver .message-time { text-align: left; color: #94a3b8; }
+
+/* =========================================
+   4. VÙNG NHẬP LIỆU (INPUT AREA)
+   ========================================= */
+.chat-input-area {
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    border: 1px solid #e2e8f0;
+    padding: 10px 15px;
+    border-radius: 25px;
+    outline: none;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    background-color: #f8fafc;
+}
+
+.chat-input-area input:focus {
+    border-color: var(--primary-color);
+    background-color: white;
+}
+
+.chat-send-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chat-send-btn:hover {
+    background-color: var(--primary-hover);
+    transform: scale(1.05);
+}

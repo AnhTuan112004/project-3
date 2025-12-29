@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="bg-dark text-white pt-5 pb-4 mt-auto border-top border-secondary border-opacity-25">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 fw-bold text-primary">
+                    <i class="bi bi-soundwave me-2"></i>NAT STUDIO
+                </h5>
+                <p class="small text-muted pe-md-4" style="line-height: 1.8;">
+                    Hệ thống đặt lịch phòng thu âm hiện đại, cung cấp không gian sáng tạo chuyên nghiệp
+                    với trang thiết bị tối tân dành cho nghệ sĩ. Nơi biến những ý tưởng âm nhạc thành hiện thực.
+                </p>
+                <div class="mt-4">
+                    <ul class="list-unstyled list-inline">
+                        <li class="list-inline-item me-3">
+                            <a href="#" class="social-icon" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item me-3">
+                            <a href="#" class="social-icon" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item me-3">
+                            <a href="#" class="social-icon" title="Youtube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#" class="social-icon" title="TikTok">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                <h6 class="text-uppercase mb-4 fw-bold small">Dịch vụ</h6>
+                <ul class="list-unstyled footer-links small">
+                    <li class="mb-2"><a th:href="@{/home}">Đặt phòng thu</a></li>
+                    <li class="mb-2"><a th:href="@{/blog}">Tin tức âm nhạc</a></li>
+                    <li class="mb-2"><a th:href="@{/booking/history}">Lịch sử đặt phòng</a></li>
+                    <li class="mb-2"><a href="#">Chính sách bảo mật</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3 small">
+                <h6 class="text-uppercase mb-4 fw-bold">Liên hệ</h6>
+                <div class="d-flex align-items-start mb-3">
+                    <i class="fas fa-map-marker-alt text-primary me-3 mt-1"></i>
+                    <span class="text-muted">Trịnh Văn Bô, Nam Từ Liêm, Hà Nội, Việt Nam</span>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-envelope text-primary me-3"></i>
+                    <a href="mailto:contact@natstudio.vn" class="text-muted text-decoration-none">contact@natstudio.vn</a>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-phone-alt text-primary me-3"></i>
+                    <span class="text-muted">+84 123 456 789</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-clock text-primary me-3"></i>
+                    <span class="text-muted">Mở cửa: 08:00 - 22:00</span>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mb-4 mt-5 border-secondary border-opacity-50">
+
+        <div class="row align-items-center">
+            <div class="col-md-7 col-lg-8 text-center text-md-start">
+                <p class="small mb-0 text-muted">
+                    &copy; 2025 <strong class="text-primary">NAT Studio</strong>. Thiết kế bởi
+                    <span class="text-white fw-bold">Nhóm Java K23</span>.
+                    <span class="d-none d-md-inline ms-2">| Đồ án Java Web K23CNT1</span>
+                </p>
+            </div>
+            <div class="col-md-5 col-lg-4 text-center text-md-end mt-3 mt-md-0">
+                <img th:src="@{/images/payment-methods.png}" alt="Payment Methods" style="height: 25px; filter: grayscale(1) brightness(1.5);">
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Hiệu ứng cho đường dẫn danh mục */
+        .footer-links a {
+            color: #94a3b8; /* text-muted color */
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .footer-links a:hover {
+            color: #0d6efd !important;
+            transform: translateX(5px);
+        }
+
+        /* Hiệu ứng cho các icon mạng xã hội */
+        .social-icon {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .social-icon:hover {
+            background: #0d6efd;
+            color: #fff !important;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        }
+
+        /* Tinh chỉnh khoảng cách text liên hệ */
+        footer p, footer span {
+            letter-spacing: 0.3px;
+        }
+    </style>
+</footer>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Thanh toán đơn hàng | NAT Studio</title>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+
+    <style>
+        /* Hiệu ứng khung QR chuyên nghiệp */
+        .qr-wrapper {
+            position: relative;
+            padding: 20px;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #edf2f7;
+            display: inline-block;
+        }
+
+        /* Khung quét giả lập */
+        .qr-scanner-line {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: rgba(13, 110, 253, 0.5);
+            box-shadow: 0 0 8px #0d6efd;
+            animation: scan 3s infinite linear;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: 20px; }
+            50% { top: calc(100% - 22px); }
+            100% { top: 20px; }
+        }
+
+        .amount-highlight {
+            font-size: 2.25rem;
+            color: #1e293b;
+            font-weight: 800;
+            letter-spacing: -1px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+
+        .copy-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-box:hover {
+            background: #f1f5f9;
+            border-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a th:href="@{/home}">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Thanh toán</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-11 col-xl-10">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden animate__animated animate__fadeIn">
+                <div class="row g-0">
+
+                    <div class="col-md-6 p-4 p-lg-5 bg-white">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                <i class="bi bi- receipt text-primary fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0 text-dark">Chi tiết thanh toán</h4>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded-4 border bg-light bg-opacity-50">
+                            <label class="text-muted small fw-bold text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Dịch vụ sử dụng</label>
+                            <h5 th:text="${booking.studio.name}" class="fw-bold text-primary mb-2">Tên phòng thu</h5>
+                            <div class="text-muted small">
+                                <div class="mb-1"><i class="bi bi-calendar3 me-2"></i>Ngày đặt: <span class="fw-bold text-dark" th:text="${#temporals.format(booking.startTime, 'dd/MM/yyyy')}"></span></div>
+                                <div><i class="bi bi-clock me-2"></i>Khung giờ: <span class="fw-bold text-dark" th:text="${#temporals.format(booking.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(booking.endTime, 'HH:mm')}"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive mb-4">
+                            <table class="table table-borderless align-middle">
+                                <tbody>
+                                <tr>
+                                    <td class="text-muted ps-0">Tiền thuê phòng:</td>
+                                    <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Phí dịch vụ:</td>
+                                    <td class="text-end text-success fw-bold">Miễn phí</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="py-3 fs-5 fw-bold ps-0">Tổng thanh toán:</td>
+                                    <td class="py-3 text-end">
+                                        <div class="amount-highlight text-danger">
+                                            <span th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'POINT', 0, 'COMMA')}"></span><small class="fs-4 ms-1">₫</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-warning border-0 rounded-4 d-flex align-items-start p-3">
+                            <i class="bi bi-shield-lock-fill fs-4 me-3 mt-1"></i>
+                            <small class="lh-sm">Hệ thống NAT Studio bảo mật giao dịch của bạn. Vui lòng không tắt trình duyệt cho đến khi nhận được thông báo xác nhận.</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 p-4 p-lg-5 bg-light border-start">
+                        <div class="text-center">
+                            <h5 class="fw-bold mb-1">Quét mã VietQR</h5>
+                            <p class="text-muted small mb-4">Hỗ trợ tất cả ngân hàng và ví điện tử</p>
+
+                            <div class="qr-wrapper mb-4">
+                                <div class="qr-scanner-line"></div>
+                                <img th:src="${qrUrl}" alt="Payment QR Code" class="img-fluid position-relative z-2" style="max-width: 220px;">
+                            </div>
+
+                            <div class="text-start mx-auto mb-4" style="max-width: 320px;">
+                                <div class="step-item">
+                                    <div class="step-number me-3">1</div>
+                                    <div class="small text-muted">Mở ứng dụng Ngân hàng hoặc Ví điện tử (MoMo, ZaloPay,...)</div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number me-3">2</div>
+                                    <div class="small text-muted">Chọn <strong>Quét mã QR</strong> và quét hình bên trên</div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number me-3">3</div>
+                                    <div class="small text-muted flex-grow-1">
+                                        Nội dung chuyển khoản (bắt buộc):
+                                        <div class="copy-box mt-2 d-flex justify-content-between align-items-center" onclick="copyContent()">
+                                            <strong class="text-primary fs-5" id="payContent" th:text="${paymentContent}">NAT_123</strong>
+                                            <i class="bi bi-copy text-muted"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/booking/history}" class="btn btn-primary rounded-pill py-3 fw-bold shadow">
+                                    <i class="bi bi-check2-circle me-2"></i>Xác nhận đã chuyển tiền
+                                </a>
+                                <button onclick="window.print()" class="btn btn-link btn-sm text-muted text-decoration-none">
+                                    <i class="bi bi-printer me-1"></i> In hóa đơn thanh toán
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function copyContent() {
+        const content = document.getElementById('payContent').innerText;
+        navigator.clipboard.writeText(content);
+
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Đã sao chép nội dung!',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    }
+</script>
+
+</body>
+</html>

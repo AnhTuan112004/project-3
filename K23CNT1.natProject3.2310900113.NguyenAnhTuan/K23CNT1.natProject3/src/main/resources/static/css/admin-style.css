@@ -1,0 +1,326 @@
+/* ==========================================================================
+   1. CẤU HÌNH CHUNG & BIẾN (VARIABLES)
+   ========================================================================== */
+:root {
+    --primary-color: #0d6efd;
+    --sidebar-bg: #1e293b; /* Màu Slate đậm */
+    --sidebar-text: #94a3b8;
+    --sidebar-active: #3b82f6;
+    --bg-body: #f1f5f9; /* Xám xanh nhạt */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.925rem;
+    background-color: var(--bg-body);
+    color: #334155;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+/* ==========================================================================
+   2. SIDEBAR (MENU TRÁI)
+   ========================================================================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 0;
+    width: 240px; /* Chiều rộng cố định */
+    background-color: var(--sidebar-bg);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+    overflow-y: auto;
+}
+
+/* Logo Brand */
+.sidebar .brand-section {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding-left: 24px;
+    background: rgba(0,0,0,0.1);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar .brand-section i {
+    color: var(--sidebar-active);
+    margin-right: 10px;
+}
+
+/* Nhóm Menu */
+.sidebar-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #475569;
+    padding: 24px 24px 10px;
+    letter-spacing: 0.05em;
+}
+
+/* Link trong Sidebar */
+.sidebar .nav-link {
+    font-weight: 500;
+    color: var(--sidebar-text);
+    padding: 12px 24px;
+    margin: 4px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.1rem;
+    width: 28px;
+    text-align: left;
+    transition: transform 0.2s;
+}
+
+/* Hiệu ứng Hover */
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.sidebar .nav-link:hover i {
+    transform: scale(1.1);
+}
+
+/* Link đang Active */
+.sidebar .nav-link.active {
+    color: #fff;
+    background: linear-gradient(90deg, var(--sidebar-active), #2563eb);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ==========================================================================
+   3. MAIN CONTENT (NỘI DUNG BÊN PHẢI)
+   ========================================================================== */
+main {
+    /* [QUAN TRỌNG] Đẩy toàn bộ nội dung sang phải 240px để không đè lên Sidebar */
+    margin-left: 240px;
+    padding: 30px;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+/* Tiêu đề trang */
+h1, h2, h3, h4, h5, h6 {
+    color: #1e293b;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   4. CARDS (THẺ NỘI DUNG)
+   ========================================================================== */
+.card {
+    border: none;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 20px 24px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* ==========================================================================
+   5. TABLES (BẢNG DỮ LIỆU)
+   ========================================================================== */
+.table-responsive {
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+}
+
+.table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: #f8fafc;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+.table tbody td {
+    padding: 16px 24px;
+    vertical-align: middle;
+    color: #475569;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.table img {
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ==========================================================================
+   6. SOFT BADGES (HUY HIỆU TRẠNG THÁI)
+   ========================================================================== */
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 600;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+}
+
+.bg-warning { background-color: #fef3c7 !important; color: #d97706 !important; }
+.bg-success { background-color: #d1fae5 !important; color: #059669 !important; }
+.bg-info    { background-color: #e0f2fe !important; color: #0284c7 !important; }
+.bg-danger  { background-color: #fee2e2 !important; color: #dc2626 !important; }
+.bg-secondary { background-color: #f1f5f9 !important; color: #64748b !important; }
+
+/* ==========================================================================
+   7. UTILITIES & BUTTONS
+   ========================================================================== */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* ==========================================================================
+   8. PAGINATION (PHÂN TRANG)
+   ========================================================================== */
+.pagination {
+    margin-top: 1rem;
+    gap: 4px;
+}
+
+.pagination .page-link {
+    border: none;
+    border-radius: 8px;
+    color: #64748b;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.pagination .page-link:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+}
+
+/* ==========================================================================
+   9. ADMIN CHAT STYLES (GIAO DIỆN CHAT)
+   ========================================================================== */
+
+/* Khung Chat */
+.chat-container {
+    height: calc(100vh - 150px); /* Chiều cao vừa vặn màn hình */
+    background: #fff;
+    border-radius: 16px; /* Bo góc mềm mại */
+    overflow: hidden;
+
+    /* Hiệu ứng nổi lên giúp tách biệt với nền */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+
+    display: flex;
+    flex-direction: row;
+}
+
+/* Cột trái: Danh sách */
+.user-list-col {
+    width: 320px;
+    min-width: 320px;
+    border-right: 1px solid #f0f0f0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cột phải: Khung chat */
+.chat-area-col {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fafafa; /* Nền chat hơi xám để làm nổi bật tin nhắn trắng */
+}
+
+/* Bong bóng chat */
+.msg-bubble {
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.msg-admin .msg-bubble {
+    background: #0d6efd;
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+}
+
+.msg-user .msg-bubble {
+    background: white;
+    color: #333;
+    border: 1px solid #eee;
+    border-radius: 18px 18px 18px 4px;
+}

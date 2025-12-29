@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+
+    <style>
+        /* Tinh chỉnh Typography cho bài viết chuyên nghiệp */
+        .post-container {
+            margin-top: -60px; /* Đẩy nội dung lên trên ảnh nền nếu cần */
+            position: relative;
+            z-index: 2;
+        }
+
+        .post-content {
+            color: #334155;
+            line-height: 1.8;
+            font-family: 'Inter', sans-serif;
+            text-align: justify;
+        }
+
+        .post-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .post-header-img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .author-badge {
+            background-color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 50rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .sticky-share {
+            position: sticky;
+            top: 100px;
+        }
+
+        /* Hiệu ứng Breadcrumb */
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .post-title {
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-5 animate__animated animate__fadeIn">
+        <ol class="breadcrumb bg-white p-3 rounded-pill shadow-sm px-4 d-inline-flex">
+            <li class="breadcrumb-item"><a th:href="@{/home}"><i class="bi bi-house-door me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/blog}">Blog & Tin tức</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">Chi tiết bài viết</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden animate__animated animate__fadeInUp">
+
+                <div class="p-3 p-md-4 pb-0">
+                    <img th:if="${post.imageUrl != null}" th:src="${post.imageUrl}"
+                         class="post-header-img shadow-lg" alt="Cover Image">
+
+                    <img th:unless="${post.imageUrl != null}"
+                         src="https://images.unsplash.com/photo-1514525253361-bee8a48790c2?auto=format&fit=crop&w=1200&q=80"
+                         class="post-header-img shadow-lg" alt="Default Cover">
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <header class="mb-5">
+                        <h1 class="fw-extrabold post-title mb-4 text-dark display-5" th:text="${post.title}">
+                            Khám phá công nghệ thu âm hiện đại tại NAT Studio
+                        </h1>
+
+                        <div class="d-flex flex-wrap align-items-center gap-4 text-muted border-bottom border-top py-3">
+                            <div class="author-badge">
+                                <div class="bg-primary text-white rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <span class="fw-bold text-dark small" th:text="${post.author != null ? post.author.fullName : 'Ban biên tập'}">Admin</span>
+                            </div>
+
+                            <div class="small d-flex align-items-center">
+                                <i class="bi bi-calendar3 me-2 text-primary"></i>
+                                <span th:text="${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}">10:00 01/01/2025</span>
+                            </div>
+
+                            <div class="small d-flex align-items-center">
+                                <i class="bi bi-bookmark-heart me-2 text-danger"></i>
+                                <span>Kiến thức & Chia sẻ</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <article class="post-content fs-5" th:utext="${post.content}">
+                        Nội dung chi tiết của bài viết...
+                    </article>
+
+                    <div class="mt-5 pt-5 border-top">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-bold text-dark me-2">Chia sẻ bài viết:</span>
+                                <a href="#" class="btn btn-outline-primary btn-sm rounded-circle"><i class="bi bi-facebook"></i></a>
+                                <a href="#" class="btn btn-outline-info btn-sm rounded-circle"><i class="bi bi-twitter-x"></i></a>
+                                <a href="#" class="btn btn-outline-success btn-sm rounded-circle"><i class="bi bi-link-45deg"></i></a>
+                            </div>
+
+                            <a th:href="@{/blog}" class="btn btn-dark px-4 rounded-pill shadow-sm hover-lift">
+                                <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách tin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <h4 class="fw-bold mb-4">Bài viết khác dành cho bạn</h4>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 h-100 hover-lift">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-3 p-2 me-3 text-primary">
+                                    <i class="bi bi-journal-text fs-3"></i>
+                                </div>
+                                <a th:href="@{/blog}" class="text-decoration-none text-dark fw-bold stretched-link">
+                                    Xem thêm nhiều kiến thức bổ ích khác về âm nhạc tại Blog của NAT Studio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<div th:replace="~{fragments/chat-box :: chat-box}"></div>
+
+</body>
+</html>

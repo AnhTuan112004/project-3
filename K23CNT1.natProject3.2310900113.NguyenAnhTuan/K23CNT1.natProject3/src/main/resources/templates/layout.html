@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="vi">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+
+    <th:block layout:fragment="additional-css"></th:block>
+
+    <style>
+        /* Sticky Footer & Layout chuẩn */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* Smooth scroll cho toàn trang */
+            scroll-behavior: smooth;
+        }
+        main {
+            flex: 1 0 auto;
+            /* Animation nhẹ khi chuyển trang */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main layout:fragment="content" id="main-content">
+</main>
+
+<div th:replace="~{fragments/chat-box :: chat-box}"></div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/chat.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Kiểm tra quyền và danh tính
+        const isAuthenticated = [[${#authorization.expression('isAuthenticated()')}]];
+        const fullName = [[${#authorization.expression('isAuthenticated()') ? #authentication.principal.fullName : null}]];
+        const username = [[${#authorization.expression('isAuthenticated()') ? #authentication.name : null}]];
+
+        // 2. Tự động kết nối WebSocket nếu đã đăng nhập
+        if (isAuthenticated && fullName) {
+            console.log("NAT Studio Support: Connecting as " + fullName);
+
+            // Đảm bảo chat.js đã load xong trước khi gọi
+            const checkConnect = setInterval(() => {
+                if (typeof connect === "function") {
+                    connect(fullName); // Gọi hàm connect từ chat.js
+                    clearInterval(checkConnect);
+                }
+            }, 100);
+
+            // Timeout sau 5s nếu không kết nối được
+            setTimeout(() => clearInterval(checkConnect), 5000);
+        }
+
+        // 3. Hiệu ứng active menu tự động
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+    /*]]>*/
+</script>
+
+<th:block layout:fragment="additional-scripts"></th:block>
+
+</body>
+</html>
