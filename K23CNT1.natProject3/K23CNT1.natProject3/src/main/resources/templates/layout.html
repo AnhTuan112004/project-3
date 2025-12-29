@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="vi">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <th:block layout:fragment="additional-css"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="flex-grow-1" layout:fragment="content">
+</main>
+
+<div th:replace="~{fragments/chat-box :: chat-box}"></div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/chat.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // 1. Kiểm tra trạng thái đăng nhập
+        var isAuthenticated = [[${#authorization.expression('isAuthenticated()')}]];
+
+        // 2. [QUAN TRỌNG] Lấy FullName an toàn
+        // Sử dụng toán tử 3 ngôi của THYMELEAF để kiểm tra trên Server.
+        // Nếu đã login -> Lấy fullName.
+        // Nếu chưa login -> Trả về null (Không cố truy cập .fullName nữa)
+        var fullName = [[${#authorization.expression('isAuthenticated()') ? #authentication.principal.fullName : null}]];
+
+        if (isAuthenticated && fullName) {
+            console.log("Hệ thống: Xin chào " + fullName + ". Đang kết nối Chat...");
+
+            // Kiểm tra hàm connect có tồn tại không trước khi gọi (tránh lỗi nếu file chat.js chưa load)
+            if (typeof connect === "function") {
+                connect(fullName);
+            }
+        } else {
+            console.log("Hệ thống: Chế độ khách (Chat bị vô hiệu hóa)");
+            // Nếu muốn cho khách chat, có thể mở dòng dưới:
+            // if (typeof connect === "function") connect("Khách " + Math.floor(Math.random() * 1000));
+        }
+    });
+    /*]]>*/
+</script>
+
+<th:block layout:fragment="additional-scripts"></th:block>
+
+</body>
+</html>

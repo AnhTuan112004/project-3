@@ -1,0 +1,199 @@
+/* =========================================
+   1. GLOBAL VARIABLES & RESET
+   ========================================= */
+:root {
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --bg-light: #f8f9fa;
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --border-radius: 1rem;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* =========================================
+   2. UTILITIES & COMPONENTS
+   ========================================= */
+.rounded-4 {
+    border-radius: var(--border-radius) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.12) !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.bg-soft-primary {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+    color: var(--primary-color) !important;
+}
+
+.fw-extrabold {
+    font-weight: 800;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+/* =========================================
+   3. RANK BADGES (HẠNG THÀNH VIÊN)
+   ========================================= */
+.rank-badge {
+    padding: 0.5em 1em;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 50rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+/* Rank: Vàng */
+.rank-GOLD {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
+}
+
+/* Rank: Bạc */
+.rank-SILVER {
+    color: #383d41;
+    background-color: #e2e3e5;
+    border: 1px solid #d6d8db;
+}
+
+/* Rank: Đồng */
+.rank-BRONZE {
+    color: #8f5b28;
+    background-color: #fdf2e9; /* Màu cam nhạt */
+    border: 1px solid #f5c6cb;
+}
+
+/* =========================================
+   4. HERO SECTION (TRANG CHỦ)
+   ========================================= */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5)),
+                url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 100px 0;
+    border-radius: var(--border-radius);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* =========================================
+   5. STUDIO CARDS (HIỆU ỨNG HOVER)
+   ========================================= */
+.studio-card {
+    border: none;
+    border-radius: var(--border-radius);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+    background: white;
+}
+
+.studio-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.studio-card .card-img-wrapper {
+    overflow: hidden;
+    position: relative;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.studio-card .card-img-top {
+    transition: transform 0.6s ease;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.studio-card:hover .card-img-top {
+    transform: scale(1.08); /* Zoom ảnh nhẹ khi hover */
+}
+
+/* Badge loại phòng trên ảnh */
+.studio-type-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* =========================================
+   6. AUDIO PLAYER (CUSTOM STYLE)
+   ========================================= */
+audio {
+    width: 100%;
+    height: 45px;
+    border-radius: 30px;
+    outline: none;
+}
+
+/* Chỉ áp dụng cho Chrome/Edge/Safari */
+audio::-webkit-media-controls-panel {
+    background-color: #f1f3f4;
+    border-radius: 30px;
+    padding: 0 10px;
+}
+
+audio::-webkit-media-controls-play-button {
+    background-color: white;
+    border-radius: 50%;
+    color: var(--primary-color);
+}
+
+/* =========================================
+   7. PAGINATION (PHÂN TRANG)
+   ========================================= */
+.pagination .page-link {
+    color: var(--primary-color);
+    border: none;
+    margin: 0 2px;
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: var(--primary-hover);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #adb5bd;
+    background-color: transparent;
+}

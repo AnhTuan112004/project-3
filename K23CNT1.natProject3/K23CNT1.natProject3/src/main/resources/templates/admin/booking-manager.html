@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <style>
+        /* CSS riêng cho bảng Booking */
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            background-color: #e9ecef;
+            color: #6c757d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Trạng thái đơn hàng (Soft Badges) */
+        .badge-soft-warning { background-color: #fff8e1; color: #b78103; border: 1px solid #f9f1c8; }
+        .badge-soft-info { background-color: #e0f2f1; color: #00695c; border: 1px solid #b2dfdb; }
+        .badge-soft-success { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+        .badge-soft-secondary { background-color: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
+
+        /* Hover hàng */
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/sidebar :: sidebar('bookings')}"></div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1">
+                        <i class="bi bi-calendar2-check text-primary me-2"></i>Quản lý Đơn đặt
+                    </h2>
+                    <p class="text-muted mb-0 small">Theo dõi và xử lý các yêu cầu đặt phòng thu.</p>
+                </div>
+
+                <div class="btn-group shadow-sm">
+                    <button type="button" class="btn btn-white border fw-bold text-secondary">
+                        <i class="bi bi-filter me-1"></i>Lọc trạng thái
+                    </button>
+                    <button type="button" class="btn btn-white border fw-bold text-secondary">
+                        <i class="bi bi-download me-1"></i>Xuất Excel
+                    </button>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4 rounded-4 bg-white">
+                <div class="card-body py-3 d-flex flex-wrap gap-3 align-items-center">
+                    <span class="small fw-bold text-muted text-uppercase me-2">
+                        <i class="bi bi-tag-fill me-1"></i>Trạng thái:
+                    </span>
+                    <span class="badge badge-soft-warning rounded-pill px-3 py-2"><i class="bi bi-hourglass-split me-1"></i>PENDING</span>
+                    <span class="badge badge-soft-info rounded-pill px-3 py-2"><i class="bi bi-check2-circle me-1"></i>CONFIRMED</span>
+                    <span class="badge badge-soft-success rounded-pill px-3 py-2"><i class="bi bi-check2-all me-1"></i>COMPLETED</span>
+                    <span class="badge badge-soft-secondary rounded-pill px-3 py-2"><i class="bi bi-x-circle me-1"></i>CANCELLED</span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="min-width: 900px;">
+                        <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3" style="width: 80px;">Mã #</th>
+                            <th style="width: 250px;">Khách hàng</th>
+                            <th>Phòng thu & Thời gian</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center" style="width: 150px;">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="booking : ${bookings}">
+                            <td class="ps-4">
+                                <span class="fw-bold text-primary font-monospace" th:text="'#' + ${booking.id}"></span>
+                            </td>
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3 flex-shrink-0">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <div th:if="${booking.user != null}">
+                                        <div th:text="${booking.user.fullName}" class="fw-bold text-dark"></div>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 150px;">
+                                            <i class="bi bi-envelope me-1"></i><span th:text="${booking.user.email}"></span>
+                                        </small>
+                                    </div>
+                                    <div th:if="${booking.user == null}">
+                                        <span class="fw-bold text-secondary fst-italic">Khách vãng lai</span>
+                                        <small class="text-muted d-block">Không có tài khoản</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="mb-1">
+                                    <span class="badge bg-light text-dark border shadow-sm fw-bold">
+                                        <i class="bi bi-mic me-1 text-primary"></i><span th:text="${booking.studio.name}"></span>
+                                    </span>
+                                </div>
+                                <div class="small text-muted mt-1">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    <span th:text="${#temporals.format(booking.startTime, 'dd/MM/yyyy')}"></span>
+                                    <span class="mx-1">•</span>
+                                    <span class="fw-bold text-dark" th:text="${#temporals.format(booking.startTime, 'HH:mm')}"></span>
+                                    <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                    <span class="fw-bold text-dark" th:text="${#temporals.format(booking.endTime, 'HH:mm')}"></span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="fw-bold text-success fs-6"
+                                      th:text="${booking.totalPrice != null ? #numbers.formatDecimal(booking.totalPrice, 0, 'POINT', 0, 'COMMA') : '0'} + ' ₫'">
+                                </span>
+                            </td>
+
+                            <td>
+                                <th:block th:switch="${booking.status}">
+                                    <span th:case="'PENDING'" class="badge badge-soft-warning rounded-pill">Chờ duyệt</span>
+                                    <span th:case="'CONFIRMED'" class="badge badge-soft-info rounded-pill">Đã xác nhận</span>
+                                    <span th:case="'COMPLETED'" class="badge badge-soft-success rounded-pill">Hoàn thành</span>
+                                    <span th:case="'CANCELLED'" class="badge badge-soft-secondary rounded-pill">Đã hủy</span>
+                                    <span th:case="*" class="badge bg-light text-dark border" th:text="${booking.status}"></span>
+                                </th:block>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm" th:if="${booking.status == 'PENDING'}">
+                                    <a th:href="@{/admin/booking/approve/{id}(id=${booking.id})}"
+                                       class="btn btn-sm btn-success px-3" title="Duyệt đơn">
+                                        <i class="bi bi-check-lg"></i>
+                                    </a>
+                                    <a th:href="@{/admin/booking/reject/{id}(id=${booking.id})}"
+                                       class="btn btn-sm btn-outline-danger px-3" title="Từ chối"
+                                       onclick="return confirm('Bạn chắc chắn muốn từ chối đơn này?')">
+                                        <i class="bi bi-x-lg"></i>
+                                    </a>
+                                </div>
+
+                                <div th:if="${booking.status == 'CONFIRMED'}">
+                                    <a th:href="@{/admin/booking/complete/{id}(id=${booking.id})}"
+                                       class="btn btn-sm btn-primary px-3 rounded-pill shadow-sm fw-bold">
+                                        <i class="bi bi-check2-square me-1"></i>Xong
+                                    </a>
+                                </div>
+
+                                <span th:if="${booking.status == 'COMPLETED'}" class="text-success small fw-bold d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-check-circle-fill me-1 fs-5"></i> OK
+                                </span>
+
+                                <span th:if="${booking.status == 'CANCELLED'}" class="text-muted small d-flex align-items-center justify-content-center opacity-50">
+                                    <i class="bi bi-ban me-1 fs-5"></i> Closed
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${bookings.empty}">
+                            <td colspan="6" class="text-center py-5">
+                                <div class="text-muted opacity-50">
+                                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                    <p class="mb-0">Chưa có đơn đặt phòng nào.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4" th:if="${totalPages > 1}">
+                <nav>
+                    <ul class="pagination shadow-sm">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link border-0 rounded-start" th:href="@{/admin/bookings(page=${currentPage - 1})}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <a class="page-link border-0 mx-1 rounded" th:href="@{/admin/bookings(page=${i})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link border-0 rounded-end" th:href="@{/admin/bookings(page=${currentPage + 1})}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+</body>
+</html>

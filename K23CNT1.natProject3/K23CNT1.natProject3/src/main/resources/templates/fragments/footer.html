@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="bg-dark text-white pt-5 pb-4 mt-auto">
+    <div class="container text-md-left">
+        <div class="row text-md-left">
+            <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-primary">
+                    <i class="fas fa-microphone-lines me-2"></i>NAT STUDIO
+                </h5>
+                <p class="small text-muted">
+                    Hệ thống đặt lịch phòng thu âm hiện đại, cung cấp không gian sáng tạo chuyên nghiệp
+                    với trang thiết bị tối tân dành cho nghệ sĩ.
+                </p>
+            </div>
+
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3 small">
+                <h6 class="text-uppercase mb-4 font-weight-bold">Dịch vụ</h6>
+                <p><a th:href="@{/home}" class="text-white text-decoration-none">Đặt phòng thu</a></p>
+                <p><a th:href="@{/blog}" class="text-white text-decoration-none">Tin tức âm nhạc</a></p>
+                <p><a th:href="@{/booking/history}" class="text-white text-decoration-none">Lịch sử đặt</a></p>
+            </div>
+
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3 small">
+                <h6 class="text-uppercase mb-4 font-weight-bold">Liên hệ</h6>
+                <p><i class="fas fa-home me-2"></i> Hà Nội, Việt Nam</p>
+                <p><i class="fas fa-envelope me-2"></i> contact@natstudio.vn</p>
+                <p><i class="fas fa-phone me-2"></i> +84 123 456 789</p>
+            </div>
+        </div>
+
+        <hr class="mb-4 mt-4 border-secondary">
+
+        <div class="row align-items-center">
+            <div class="col-md-7 col-lg-8">
+                <p class="small mb-0">
+                    &copy; 2025 <strong class="text-primary">NAT Studio</strong>. All Rights Reserved.
+                    <span class="text-muted ms-2">| Đồ án Java Web K23CNT1</span>
+                </p>
+            </div>
+
+            <div class="col-md-5 col-lg-4">
+                <div class="text-center text-md-right">
+                    <ul class="list-unstyled list-inline mb-0">
+                        <li class="list-inline-item">
+                            <a href="#" class="btn-floating btn-sm text-white" style="font-size: 1.2rem;">
+                                <i class="fab fa-facebook hover-primary"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#" class="btn-floating btn-sm text-white" style="font-size: 1.2rem;">
+                                <i class="fab fa-github hover-primary"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#" class="btn-floating btn-sm text-white" style="font-size: 1.2rem;">
+                                <i class="fab fa-youtube hover-primary"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hover-primary:hover { color: #0d6efd; transition: 0.3s; }
+        footer a:hover { color: #0d6efd !important; text-decoration: underline !important; }
+    </style>
+</footer>
+</body>
+</html>

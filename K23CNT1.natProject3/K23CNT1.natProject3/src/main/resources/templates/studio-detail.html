@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${studio.name} + ' | NAT Studio'"></title>
+
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+
+    <style>
+        /* Sidebar dính khi cuộn */
+        .sticky-sidebar {
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+        }
+
+        /* Hero Image */
+        .studio-hero-img {
+            height: 450px;
+            object-fit: cover;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Equipment Checkbox */
+        .equipment-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .equipment-item:hover {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+        .form-check-input:checked + label {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        /* Calendar */
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="content" class="container mt-4 mb-5">
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-white p-3 rounded-pill shadow-sm">
+            <li class="breadcrumb-item"><a th:href="@{/home}" class="text-decoration-none fw-bold"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page" th:text="${studio.name}"></li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+
+        <div class="col-lg-8">
+            <div class="position-relative mb-4">
+                <img th:src="${studio.imageUrl != null ? studio.imageUrl : 'https://placehold.co/1200x600'}"
+                     class="img-fluid w-100 studio-hero-img"
+                     th:alt="${studio.name}"
+                     onerror="this.src='https://placehold.co/1200x600?text=Studio+Image';">
+
+                <span class="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 fs-6 px-3 py-2 rounded-pill backdrop-blur">
+                    <i class="fas fa-music me-1"></i> <span th:text="${studio.studioType}">TYPE</span>
+                </span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h1 th:text="${studio.name}" class="fw-bold text-dark mb-1"></h1>
+                    <div class="text-warning small">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <span class="text-muted ms-1">(5.0)</span>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Đơn giá</small>
+                    <span class="fs-2 fw-extrabold text-primary"
+                          th:text="${#numbers.formatDecimal(studio.pricePerHour, 0, 'POINT', 0, 'COMMA')}"></span>
+                    <span class="text-muted fw-bold">₫/h</span>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h5 class="fw-bold border-start border-4 border-primary ps-3 mb-3">Mô tả phòng thu</h5>
+                <p class="text-muted text-justify" style="line-height: 1.8;" th:text="${studio.description}"></p>
+            </div>
+
+            <div th:if="${!studio.demos.empty}" class="mb-5">
+                <h5 class="fw-bold border-start border-4 border-danger ps-3 mb-4">Bản thu mẫu (Demo)</h5>
+                <div class="vstack gap-3">
+                    <div th:each="demo : ${studio.demos}" class="card border-0 shadow-sm rounded-4 p-2 bg-white">
+                        <div class="d-flex align-items-center p-2">
+                            <div class="flex-shrink-0 bg-danger bg-opacity-10 text-danger p-3 rounded-circle me-3">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden me-3">
+                                <h6 class="mb-0 fw-bold text-truncate" th:text="${demo.trackName}">Track Name</h6>
+                                <small class="text-muted">Audio Sample</small>
+                            </div>
+                            <div class="flex-shrink-0" style="width: 200px;">
+                                <audio controls class="w-100" style="height: 35px;">
+                                    <source th:src="${demo.audioUrl}" type="audio/mpeg">
+                                </audio>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold m-0 text-dark"><i class="far fa-calendar-check me-2 text-success"></i>Lịch trống phòng</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="calendar" class="p-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sticky-sidebar">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-dark text-white text-center py-3 border-0">
+                        <h5 class="m-0 fw-bold text-uppercase ls-1">Đặt phòng ngay</h5>
+                    </div>
+
+                    <div class="card-body p-4 bg-white">
+                        <form th:action="@{/booking/create}" method="post" th:object="${bookingRequest}" id="bookingForm">
+                            <input type="hidden" th:field="*{studioId}">
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold small text-muted text-uppercase">Bắt đầu</label>
+                                    <input type="datetime-local" id="startTime" th:field="*{startTime}" class="form-control bg-light border-0 fw-bold" required onchange="calculateTotal()">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold small text-muted text-uppercase">Kết thúc</label>
+                                    <input type="datetime-local" id="endTime" th:field="*{endTime}" class="form-control bg-light border-0 fw-bold" required onchange="calculateTotal()">
+                                </div>
+                            </div>
+
+                            <div th:if="${!recommendedEquipments.empty}" class="mb-4 bg-light bg-opacity-50 p-3 rounded-4 border border-dashed">
+                                <label class="small fw-bold mb-3 text-dark d-flex align-items-center">
+                                    <i class="fas fa-sliders-h me-2 text-primary"></i> THUÊ THÊM THIẾT BỊ
+                                </label>
+                                <div class="vstack gap-2" style="max-height: 200px; overflow-y: auto;">
+                                    <div th:each="item, stat : ${recommendedEquipments}" class="form-check equipment-item p-2 rounded-3 bg-white shadow-sm">
+                                        <input class="form-check-input equipment-checkbox ms-1 mt-1" type="checkbox"
+                                               th:field="*{equipments[__${stat.index}__].equipmentId}"
+                                               th:value="${item.id}"
+                                               th:data-price="${item.rentPrice}"
+                                               th:id="'equip-'+${item.id}"
+                                               onchange="calculateTotal()">
+
+                                        <label class="form-check-label w-100 d-flex justify-content-between align-items-center px-2"
+                                               th:for="'equip-'+${item.id}" style="cursor: pointer;">
+                                            <span class="small fw-bold text-dark" th:text="${item.name}">Mic</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill border border-success border-opacity-25"
+                                                  th:text="'+' + ${#numbers.formatDecimal(item.rentPrice/1000, 0, 'POINT', 0, 'COMMA')} + 'k'">+50k</span>
+                                        </label>
+                                        <input type="hidden" th:field="*{equipments[__${stat.index}__].quantity}" value="1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="border-secondary border-opacity-10 my-4">
+
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <span class="fw-bold text-muted small">TỔNG TẠM TÍNH</span>
+                                <span id="totalEstimate" class="text-primary fw-extrabold fs-2 lh-1">0 ₫</span>
+                            </div>
+
+                            <div th:if="${param.error}" class="alert alert-danger d-flex align-items-center small p-2 mb-3 rounded-3 shadow-sm border-0 bg-danger text-white">
+                                <i class="fas fa-exclamation-circle me-2 fs-5"></i>
+                                <span>Giờ đặt không hợp lệ hoặc đã bị trùng!</span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg hover-shadow-lg transition-all">
+                                XÁC NHẬN ĐẶT LỊCH <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+
+                            <p class="text-center mt-3 mb-0">
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    <i class="fas fa-shield-alt me-1"></i>Thanh toán an toàn & bảo mật
+                                </small>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="additional-scripts">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core/locales/vi.global.min.js"></script>
+
+    <script th:src="@{/js/calendar-setup.js}"></script>
+
+    <script th:inline="javascript">
+        // Lấy biến từ Server (Thymeleaf) sang JS
+        const studioPricePerHour = [[${studio.pricePerHour}]];
+        const studioId = [[${studio.id}]];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Khởi tạo lịch (Hàm này nằm trong file calendar-setup.js)
+            if (typeof initCalendar === 'function') {
+                initCalendar(studioId);
+            }
+
+            // 2. Chặn chọn ngày quá khứ cho input
+            const now = new Date();
+            // Điều chỉnh múi giờ để toISOString trả về đúng giờ địa phương
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const minDateTime = now.toISOString().slice(0, 16);
+
+            const startInput = document.getElementById("startTime");
+            const endInput = document.getElementById("endTime");
+
+            if(startInput) startInput.min = minDateTime;
+            if(endInput) endInput.min = minDateTime;
+        });
+
+        // 3. Hàm tính tiền (Được gọi mỗi khi input thay đổi)
+        function calculateTotal() {
+            const startVal = document.getElementById("startTime").value;
+            const endVal = document.getElementById("endTime").value;
+            const totalDisplay = document.getElementById("totalEstimate");
+
+            // Nếu chưa chọn giờ -> Reset về 0
+            if (!startVal || !endVal) {
+                totalDisplay.innerText = "0 ₫";
+                return;
+            }
+
+            const start = new Date(startVal);
+            const end = new Date(endVal);
+
+            // Tính chênh lệch giờ (làm tròn lên)
+            // Ví dụ: 1h15p -> Tính là 2h
+            let hours = Math.ceil((end - start) / (1000 * 60 * 60));
+
+            if (hours <= 0) {
+                totalDisplay.innerText = "Giờ lỗi";
+                totalDisplay.style.color = "red";
+                return;
+            }
+
+            let total = hours * studioPricePerHour;
+
+            // Cộng tiền thiết bị đã chọn
+            document.querySelectorAll('.equipment-checkbox:checked').forEach(cb => {
+                total += parseFloat(cb.getAttribute('data-price'));
+            });
+
+            // Format tiền Việt Nam
+            totalDisplay.innerText = new Intl.NumberFormat('vi-VN').format(total) + " ₫";
+            totalDisplay.style.color = "#0d6efd"; // Màu xanh primary
+        }
+    </script>
+</th:block>
+
+</body>
+</html>

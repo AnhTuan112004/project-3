@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+</head>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/sidebar :: sidebar('equipments')}"></div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/equipments}">Thiết bị</a></li>
+                    <li class="breadcrumb-item active" th:text="${equipment.id == null ? 'Thêm mới' : 'Chỉnh sửa'}"></li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="mb-0 fw-bold text-primary">
+                                <i class="bi bi-gear-wide-connected me-2"></i>
+                                <span th:text="${pageTitle}">Form Thiết Bị</span>
+                            </h5>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <form th:action="@{/admin/equipment/save}" th:object="${equipment}"
+                                  method="post" enctype="multipart/form-data">
+
+                                <input type="hidden" th:field="*{id}">
+                                <input type="hidden" th:field="*{imageUrl}">
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Tên thiết bị <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
+                                        <input type="text" th:field="*{name}" class="form-control" required
+                                               placeholder="VD: Micro Neumann U87..." autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold">Danh mục</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-collection"></i></span>
+                                            <select th:field="*{categoryTag}" class="form-select">
+                                                <option value="VOCAL">VOCAL (Micro)</option>
+                                                <option value="BAND">BAND (Nhạc cụ)</option>
+                                                <option value="DRUM">DRUM (Trống)</option>
+                                                <option value="PODCAST">PODCAST (Quay/Mic)</option>
+                                                <option value="MIXING">MIXING (Tai nghe/Loa)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold">Số lượng tồn kho</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-box-seam"></i></span>
+                                            <input type="number" th:field="*{quantity}" class="form-control" required min="0" value="1">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Giá thuê (VNĐ/buổi)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
+                                        <input type="number" th:field="*{rentPrice}" class="form-control" required min="0" step="1000">
+                                        <span class="input-group-text fw-bold">VNĐ</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Hình ảnh thiết bị</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-image"></i></span>
+                                        <input type="file" name="imageFile" id="imageInput"
+                                               class="form-control"
+                                               accept="image/png, image/jpeg, image/jpg"
+                                               onchange="previewImage(this)">
+                                    </div>
+
+                                    <div class="mt-3 text-center p-3 border rounded bg-light"
+                                         id="previewContainer"
+                                         th:style="${equipment.imageUrl == null} ? 'display:none;' : ''">
+
+                                        <p class="small text-muted mb-2">Xem trước hình ảnh:</p>
+
+                                        <img id="thumbnail"
+                                             th:src="${equipment.imageUrl}"
+                                             class="rounded shadow-sm border"
+                                             style="max-height: 200px; max-width: 100%; object-fit: contain;">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Mô tả chi tiết</label>
+                                    <textarea th:field="*{description}" class="form-control" rows="4"
+                                              placeholder="Nhập tình trạng, xuất xứ thiết bị..."></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                                    <a th:href="@{/admin/equipments}" class="btn btn-light border px-4 rounded-pill fw-bold">
+                                        <i class="bi bi-x-circle me-2"></i>Hủy bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm fw-bold">
+                                        <i class="bi bi-floppy me-2"></i>Lưu dữ liệu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+<script>
+    function previewImage(input) {
+        var previewContainer = document.getElementById('previewContainer');
+        var thumbnail = document.getElementById('thumbnail');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                thumbnail.src = e.target.result;
+                previewContainer.style.display = 'block'; // Hiện khung ảnh
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+</body>
+</html>

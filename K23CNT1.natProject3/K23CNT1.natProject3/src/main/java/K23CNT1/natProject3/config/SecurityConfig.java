@@ -1,75 +1,78 @@
 package K23CNT1.natProject3.config;
 
-
-import K23CNT1.natProject3.repository.NatUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.Collections;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 1. Mã hóa mật khẩu (BCrypt là chuẩn an toàn hiện nay)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. Cấu hình luồng bảo mật (Filter Chain)
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Tắt CSRF để test API dễ hơn (thực tế nên bật)
+                // 1. Tắt CSRF (Giúp API và Upload file hoạt động trơn tru trong môi trường Dev)
+                .csrf(csrf -> csrf.disable())
+
+                // 2. CẤU HÌNH QUYỀN TRUY CẬP
                 .authorizeHttpRequests(auth -> auth
-                        // -- KHU VỰC CÔNG KHAI (Ai cũng vào được) --
-                        .requestMatchers("/", "/room/**", "/calendar", "/api/**").permitAll()
-                        .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                        // A. TÀI NGUYÊN TĨNH & UPLOADS (Quan trọng: Cho phép khách xem ảnh/nghe nhạc)
+                        .requestMatchers(
+                                "/css/**", "/js/**", "/images/**",
+                                "/uploads/**",             // <--- Dòng này giúp khách nghe được nhạc
+                                "/assets/**", "/vendor/**"
+                        ).permitAll()
 
-                        // -- KHU VỰC ADMIN (Chỉ Role ADMIN) --
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // B. CÁC TRANG CÔNG KHAI
+                        .requestMatchers(
+                                "/", "/home",              // Trang chủ
+                                "/login", "/register",     // Đăng nhập/Đăng ký
+                                "/studios", "/studios/**", "/studio/**", // Xem chi tiết phòng
+                                "/posts", "/posts/**", "/post/**",       // Xem chi tiết bài viết
+                                "/api/**",
+                                "/error"// API (nếu có)
+                        ).permitAll()
 
-                        // -- KHU VỰC ĐĂNG NHẬP (User & Admin) --
-                        .requestMatchers("/booking/**", "/payment/**").authenticated()
+                        // C. TRANG QUẢN TRỊ (ADMIN)
+                        // Chấp nhận cả role "ADMIN" hoặc "ROLE_ADMIN" để tránh lỗi lệch tên trong DB
+                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
-                        // Các link khác bắt buộc đăng nhập
+                        // D. CÁC TRANG CÒN LẠI (Đặt lịch, User Profile...) -> BẮT BUỘC LOGIN
                         .anyRequest().authenticated()
                 )
+
+                // 3. CẤU HÌNH ĐĂNG NHẬP
                 .formLogin(form -> form
-                        .loginPage("/login")        // Đường dẫn trang login của mình
-                        .defaultSuccessUrl("/")     // Login thành công về trang chủ
-                        .failureUrl("/login?error") // Login sai
+                        .loginPage("/login")
+                        .loginProcessingUrl("/perform_login")
+                        .defaultSuccessUrl("/", true) // Mặc định về trang chủ
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
+
+                // 4. CẤU HÌNH ĐĂNG XUẤT
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/login?logout=true")
+                        .deleteCookies("JSESSIONID") // Xóa cookie phiên làm việc
                         .permitAll()
+                )
+
+                // 5. XỬ LÝ LỖI QUYỀN HẠN (403 Forbidden)
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/403") // Bạn cần tạo file templates/403.html
                 );
 
         return http.build();
-    }
-
-    // 3. Cấu hình cách lấy User từ Database để kiểm tra đăng nhập
-    @Bean
-    public UserDetailsService userDetailsService(NatUserRepository userRepo) {
-        return username -> userRepo.findByNatusername(username)
-                .map(natUser -> new User(
-                        natUser.getNatusername(),
-                        natUser.getNatpassword(),
-                        // Chuyển role từ String sang GrantedAuthority (Spring yêu cầu)
-                        Collections.singletonList(new SimpleGrantedAuthority(natUser.getNatrole()))
-                ))
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user: " + username));
     }
 }

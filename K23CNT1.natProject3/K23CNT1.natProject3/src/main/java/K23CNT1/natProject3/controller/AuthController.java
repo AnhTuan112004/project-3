@@ -1,9 +1,9 @@
 package K23CNT1.natProject3.controller;
 
 
-import K23CNT1.natProject3.dto.UserRegistrationDTO;
-import K23CNT1.natProject3.entity.NatUser;
-import K23CNT1.natProject3.service.NatUserService;
+import K23CNT1.natProject3.dto.UserRegisterDTO;
+import K23CNT1.natProject3.entity.User;
+import K23CNT1.natProject3.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,43 +14,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class AuthController {
 
-    @Autowired
-    private NatUserService userService;
+    @Autowired private UserService userService;
 
-    // Trang Đăng nhập (Spring Security tự xử lý POST, mình chỉ làm giao diện GET)
+    // Trang Login
     @GetMapping("/login")
     public String loginPage() {
-        return "auth/login"; // Tạo file templates/auth/login.html
+        return "login"; // Trả về file login.html
     }
 
     // Trang Đăng ký
     @GetMapping("/register")
     public String registerPage(Model model) {
-        model.addAttribute("userDto", new UserRegistrationDTO());
-        return "auth/register";
+        model.addAttribute("user", new UserRegisterDTO());
+        return "register"; // Trả về file register.html
     }
 
-    // Xử lý Đăng ký
+    // Xử lý khi bấm nút Đăng ký
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute UserRegistrationDTO userDto, Model model) {
-        // Kiểm tra mật khẩu nhập lại
-        if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
-            model.addAttribute("error", "Mật khẩu nhập lại không khớp!");
-            return "auth/register";
-        }
+    public String registerProcess(@ModelAttribute("user") UserRegisterDTO dto) {
+        // Map DTO sang Entity (Bạn có thể dùng MapStruct để gọn hơn)
+        User newUser = new User();
+        newUser.setUsername(dto.getUsername());
+        newUser.setPassword(dto.getPassword());
+        newUser.setFullName(dto.getFullName());
+        newUser.setEmail(dto.getEmail());
+        newUser.setPhone(dto.getPhone());
 
-        try {
-            NatUser newUser = new NatUser();
-            newUser.setNatusername(userDto.getUsername());
-            newUser.setNatpassword(userDto.getPassword()); // Service sẽ mã hóa sau
-            newUser.setNatfullname(userDto.getFullname());
+        userService.registerUser(newUser);
 
-            userService.registerUser(newUser);
-
-            return "redirect:/login?success"; // Chuyển sang login báo thành công
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage()); // VD: Trùng username
-            return "auth/register";
-        }
+        return "redirect:/login?success"; // Đăng ký xong chuyển về login
     }
 }

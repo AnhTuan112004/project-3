@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+</head>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/sidebar :: sidebar('posts')}"></div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/posts}">Quản lý Blog</a></li>
+                    <li class="breadcrumb-item active" th:text="${post.id == null ? 'Viết bài mới' : 'Chỉnh sửa'}"></li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="mb-0 fw-bold text-primary">
+                                <i class="bi bi-pen-fill me-2"></i>
+                                <span th:text="${post.id == null ? 'SOẠN THẢO BÀI VIẾT' : 'CHỈNH SỬA BÀI VIẾT'}"></span>
+                            </h5>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <form th:action="@{/admin/post/save}" th:object="${post}" method="post" enctype="multipart/form-data">
+                                <input type="hidden" th:field="*{id}">
+                                <input type="hidden" th:field="*{imageUrl}">
+                                <input type="hidden" th:if="${post.id != null}" th:field="*{createdAt}">
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                                    <div class="input-group shadow-sm">
+                                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-type-h1 text-primary"></i></span>
+                                        <input type="text" th:field="*{title}" class="form-control form-control-lg border-start-0 ps-0"
+                                               placeholder="Nhập tiêu đề hấp dẫn..." required autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Ảnh đại diện (Thumbnail)</label>
+                                    <div class="p-4 border border-dashed rounded-4 bg-light position-relative text-center">
+
+                                        <div class="input-group mb-3">
+                                            <input type="file" name="imageFile" id="imageInput"
+                                                   class="form-control" accept="image/*"
+                                                   onchange="previewImage(this)">
+                                        </div>
+                                        <small class="text-muted d-block mb-3">
+                                            <i class="bi bi-info-circle me-1"></i>Kích thước khuyên dùng: 1200x630px (Tỉ lệ 1.91:1)
+                                        </small>
+
+                                        <div id="previewContainer" th:style="${post.imageUrl == null} ? 'display:none;' : ''">
+                                            <div class="position-relative d-inline-block">
+                                                <img id="thumbnail"
+                                                     th:src="${post.imageUrl}"
+                                                     class="rounded-3 shadow-sm border"
+                                                     style="max-height: 250px; max-width: 100%; object-fit: cover;">
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success border border-light">
+                                                    Hiện tại
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Nội dung chi tiết <span class="text-danger">*</span></label>
+                                    <div class="shadow-sm rounded-3 overflow-hidden border">
+                                        <textarea id="contentEditor" th:field="*{content}" class="form-control" rows="15"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                                    <a th:href="@{/admin/posts}" class="btn btn-light px-4 border rounded-pill text-muted fw-bold">
+                                        <i class="bi bi-x-circle me-2"></i>Hủy bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm fw-bold hover-up">
+                                        <i class="bi bi-floppy me-2"></i>Lưu bài viết
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+<th:block layout:fragment="additional-scripts">
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        // 1. Khởi tạo TinyMCE
+        tinymce.init({
+            selector: '#contentEditor',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount preview fullscreen',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat | fullscreen preview',
+            height: 500,
+            menubar: false, // Ẩn thanh menu trên cùng cho gọn
+            statusbar: true,
+            branding: false,
+            promotion: false,
+            entity_encoding: "raw", // Giữ nguyên ký tự tiếng Việt
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        });
+
+        // 2. Hàm xem trước ảnh upload
+        function previewImage(input) {
+            var previewContainer = document.getElementById('previewContainer');
+            var thumbnail = document.getElementById('thumbnail');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    thumbnail.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</th:block>
+
+</body>
+</html>

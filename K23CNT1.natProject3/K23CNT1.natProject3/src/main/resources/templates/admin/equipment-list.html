@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <style>
+        /* CSS riêng cho Badge mềm */
+        .badge-soft-primary { background-color: #e3f2fd; color: #0d47a1; }
+        .badge-soft-success { background-color: #e8f5e9; color: #1b5e20; }
+        .badge-soft-warning { background-color: #fff8e1; color: #f57f17; }
+        .badge-soft-danger  { background-color: #ffebee; color: #c62828; }
+        .badge-soft-info    { background-color: #e0f7fa; color: #006064; }
+        .badge-soft-dark    { background-color: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
+
+        /* Avatar ảnh sản phẩm */
+        .img-thumbnail-custom {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .img-thumbnail-custom:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/sidebar :: sidebar('equipments')}"></div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 border-bottom pb-3 gap-3">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1">
+                        <i class="bi bi-speaker-fill me-2 text-primary"></i>Kho Thiết Bị
+                    </h2>
+                    <p class="text-muted mb-0 small">Quản lý danh sách, số lượng và tình trạng thiết bị.</p>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <form class="d-flex" th:action="@{/admin/equipments}" method="get">
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input class="form-control border-start-0 ps-2" type="search" name="keyword"
+                                   placeholder="Tìm tên thiết bị..." th:value="${keyword}" style="max-width: 250px;">
+                            <button class="btn btn-primary fw-bold" type="submit">Tìm</button>
+                        </div>
+                    </form>
+
+                    <a th:href="@{/admin/equipment/new}" class="btn btn-primary d-flex align-items-center shadow-sm fw-bold px-3">
+                        <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-success border-4 rounded-3">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 border-start border-danger border-4 rounded-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-secondary small text-uppercase">
+                            <tr>
+                                <th class="ps-4 py-3 text-nowrap" style="width: 60px;">ID</th>
+                                <th style="width: 80px;">Ảnh</th>
+                                <th>Tên thiết bị</th>
+                                <th>Danh mục</th>
+                                <th>Giá thuê / Buổi</th>
+                                <th>Tồn kho</th>
+                                <th class="text-center" style="width: 120px;">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${equipments}">
+                                <td class="ps-4 fw-bold text-muted font-monospace" th:text="'#' + ${item.id}"></td>
+
+                                <td>
+                                    <div class="position-relative">
+                                        <img th:if="${item.imageUrl}" th:src="${item.imageUrl}"
+                                             class="img-thumbnail-custom shadow-sm border">
+                                        <div th:unless="${item.imageUrl}"
+                                             class="bg-light rounded d-flex align-items-center justify-content-center text-muted border shadow-sm"
+                                             style="width: 56px; height: 56px;">
+                                            <i class="bi bi-camera-fill fs-4 opacity-25"></i>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span th:text="${item.name}" class="fw-bold text-dark d-block"></span>
+                                    <small class="text-muted text-truncate d-block" style="max-width: 200px;" th:text="${item.description}">Mô tả...</small>
+                                </td>
+
+                                <td>
+                                    <th:block th:switch="${item.categoryTag}">
+                                        <span th:case="'VOCAL'" class="badge badge-soft-info rounded-pill px-3">VOCAL</span>
+                                        <span th:case="'BAND'" class="badge badge-soft-warning rounded-pill px-3">BAND</span>
+                                        <span th:case="'DRUM'" class="badge badge-soft-danger rounded-pill px-3">DRUM</span>
+                                        <span th:case="'MIXING'" class="badge badge-soft-primary rounded-pill px-3">MIXING</span>
+                                        <span th:case="*" class="badge badge-soft-dark rounded-pill px-3" th:text="${item.categoryTag}">OTHER</span>
+                                    </th:block>
+                                </td>
+
+                                <td>
+                                    <span class="fw-bold text-primary"
+                                          th:text="${#numbers.formatDecimal(item.rentPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></span>
+                                </td>
+
+                                <td>
+                                    <span th:if="${item.quantity > 0}" class="badge badge-soft-success rounded-pill px-3">
+                                        <i class="bi bi-box-seam me-1"></i> <span th:text="${item.quantity}"></span> Sẵn sàng
+                                    </span>
+                                    <span th:if="${item.quantity <= 0}" class="badge badge-soft-danger rounded-pill px-3">
+                                        <i class="bi bi-x-circle me-1"></i> Hết hàng
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a th:href="@{/admin/equipment/edit/{id}(id=${item.id})}"
+                                           class="btn btn-sm btn-light border text-primary shadow-sm"
+                                           data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a th:href="@{/admin/equipment/delete/{id}(id=${item.id})}"
+                                           class="btn btn-sm btn-light border text-danger shadow-sm"
+                                           onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa thiết bị này không?');"
+                                           data-bs-toggle="tooltip" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${equipments.empty}">
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted opacity-50">
+                                        <i class="bi bi-search fs-1 d-block mb-3"></i>
+                                        <p class="mb-0">Không tìm thấy thiết bị nào phù hợp.</p>
+                                        <a th:href="@{/admin/equipments}" class="btn btn-sm btn-outline-secondary mt-2">Xóa bộ lọc</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 py-3" th:if="${totalPages > 1}">
+                    <nav class="d-flex justify-content-center">
+                        <ul class="pagination mb-0 shadow-sm">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link border-0 rounded-start" th:href="@{/admin/equipments(page=${currentPage - 1}, keyword=${keyword})}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link border-0 mx-1 rounded"
+                                   th:href="@{/admin/equipments(page=${i}, keyword=${keyword})}" th:text="${i + 1}">1</a>
+                            </li>
+
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link border-0 rounded-end" th:href="@{/admin/equipments(page=${currentPage + 1}, keyword=${keyword})}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+
+</body>
+</html>

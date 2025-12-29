@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Thanh toán đơn hàng | NAT Studio</title>
+    <style>
+        .qr-card { border-radius: 20px; border: 2px dashed #dee2e6; }
+        .amount-highlight { font-size: 2rem; color: #dc3545; font-weight: 800; }
+        .step-badge { width: 30px; height: 30px; background: #0d6efd; color: white; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; margin-right: 10px; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-6 p-4 p-lg-5 bg-white">
+                        <h3 class="fw-bold mb-4 text-dark"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Thông tin thanh toán</h3>
+
+                        <div class="mb-4">
+                            <p class="text-muted mb-1 small text-uppercase fw-bold">Dịch vụ đã đặt</p>
+                            <h5 th:text="${booking.studio.name}" class="fw-bold">Tên phòng thu</h5>
+                            <p class="small text-muted">
+                                <i class="far fa-calendar-alt me-1"></i> <span th:text="${#temporals.format(booking.startTime, 'dd/MM/yyyy')}"></span><br>
+                                <i class="far fa-clock me-1"></i> <span th:text="${#temporals.format(booking.startTime, 'HH:mm')}"></span> - <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}"></span>
+                            </p>
+                        </div>
+
+                        <div class="table-responsive mb-4">
+                            <table class="table table-sm border-top">
+                                <tbody>
+                                <tr>
+                                    <td class="py-2 text-muted">Tiền phòng:</td>
+                                    <td class="py-2 text-end fw-bold" th:text="${#numbers.formatCurrency(booking.totalPrice)}">0 đ</td>
+                                </tr>
+                                <tr class="border-top border-dark">
+                                    <td class="py-3 fs-5 fw-bold">Tổng cộng:</td>
+                                    <td class="py-3 text-end amount-highlight" th:text="${#numbers.formatCurrency(booking.totalPrice)}">0 đ</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-info border-0 rounded-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>Đơn hàng sẽ được duyệt tự động sau khi hệ thống nhận được tiền từ ngân hàng.</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 p-4 p-lg-5 bg-light border-start text-center">
+                        <h4 class="fw-bold mb-4">Quét mã VietQR</h4>
+
+                        <div class="qr-card bg-white p-4 mb-4 d-inline-block shadow-sm">
+                            <img th:src="${qrUrl}" alt="Payment QR Code" class="img-fluid" style="max-width: 250px;">
+                        </div>
+
+                        <div class="text-start mx-auto" style="max-width: 300px;">
+                            <p class="mb-2"><span class="step-badge">1</span> Mở ứng dụng ngân hàng/MoMo</p>
+                            <p class="mb-2"><span class="step-badge">2</span> Quét mã QR và kiểm tra số tiền</p>
+                            <p class="mb-3"><span class="step-badge">3</span> Nội dung CK: <strong class="text-primary" th:text="${paymentContent}">NAT_123</strong></p>
+                        </div>
+
+                        <a th:href="@{/booking/history}" class="btn btn-outline-dark w-100 rounded-pill mt-3 fw-bold">
+                            Tôi đã thanh toán xong <i class="fas fa-check-circle ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
