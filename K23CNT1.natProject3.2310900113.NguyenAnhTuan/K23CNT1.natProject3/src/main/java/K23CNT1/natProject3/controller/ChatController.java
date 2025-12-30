@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture; // [MỚI] Để xử lý bất đồng bộ
 
 @Controller
 public class ChatController {

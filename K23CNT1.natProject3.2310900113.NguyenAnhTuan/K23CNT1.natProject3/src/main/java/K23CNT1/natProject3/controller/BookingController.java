@@ -49,7 +49,7 @@ public class BookingController {
             // Thay vì cộng chuỗi thủ công gây lỗi Tomcat, dùng addAttribute để Spring tự mã hóa
             redirectAttributes.addAttribute("error", e.getMessage());
 
-            return "redirect:/studios/" + request.getStudioId();
+            return "redirect:/studio/" + request.getStudioId();
         }
     }
 
